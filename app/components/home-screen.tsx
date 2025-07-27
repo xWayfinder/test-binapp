@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { MapPin, Trash2 } from "lucide-react"
 
 interface HomeScreenProps {
-  onAddressSubmit: (address: string) => void
+  onAddressSubmit: (address: string) => Promise<void>
 }
 
 export default function HomeScreen({ onAddressSubmit }: HomeScreenProps) {
@@ -34,6 +34,11 @@ export default function HomeScreen({ onAddressSubmit }: HomeScreenProps) {
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Melbourne Bin Collection</h1>
           <p className="text-gray-600">Find your bin collection schedule</p>
+          <div className="mt-4">
+            <Button asChild>
+              <a href="/auth/login">Login</a>
+            </Button>
+          </div>
         </div>
 
         <Card className="shadow-lg border-0">
