@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { ThemeProvider } from '@/components/theme-provider'
 import { NavBar } from './components/nav-bar'
+import { GoogleMapsScript } from '@/components/google-maps-script'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -30,6 +31,7 @@ export default function RootLayout({
           <main className="min-h-screen">
             {children}
           </main>
+          <GoogleMapsScript />
         </ThemeProvider>
       </body>
     </html>

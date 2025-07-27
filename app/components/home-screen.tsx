@@ -1,11 +1,12 @@
 "use client"
 
 import type React from "react"
-
-import { useState } from "react"
+import { useState, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { MapPin, Trash2 } from "lucide-react"
+import { useGooglePlaces } from "@/hooks/use-google-places"
+import { cn } from "@/lib/utils"
 
 interface HomeScreenProps {
   onAddressSubmit: (address: string) => Promise<void>
@@ -13,15 +14,33 @@ interface HomeScreenProps {
 
 export default function HomeScreen({ onAddressSubmit }: HomeScreenProps) {
   const [address, setAddress] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
+  const [isFocused, setIsFocused] = useState(false)
+
+  const handleAddressSelect = useCallback((selectedAddress: string) => {
+    console.log('Address selected:', selectedAddress)
+    setAddress(selectedAddress)
+  }, [])
+
+  const handleAddressSubmit = useCallback(async (selectedAddress: string) => {
+    console.log('Submitting address:', selectedAddress)
+    await onAddressSubmit(selectedAddress)
+  }, [onAddressSubmit])
+
+  const { inputRef, isLoaded, isLoading } = useGooglePlaces({
+    onAddressSelect: handleAddressSelect,
+    onAddressSubmit: handleAddressSubmit
+  })
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!address.trim()) return
+    if (!address.trim() || isLoading) return
 
-    setIsLoading(true)
-    await onAddressSubmit(address)
-    setIsLoading(false)
+    try {
+      console.log('Manual submit with address:', address)
+      await onAddressSubmit(address)
+    } catch (error) {
+      console.error('Error submitting address:', error)
+    }
   }
 
   return (
@@ -40,12 +59,20 @@ export default function HomeScreen({ onAddressSubmit }: HomeScreenProps) {
             <div className="relative">
               <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               <Input
+                ref={inputRef}
                 type="text"
                 placeholder="Enter your full address"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                className="w-full pl-12 pr-4 py-6 text-lg rounded-full border-2 shadow-sm hover:shadow-md transition-shadow duration-200 focus-visible:ring-primary"
-                disabled={isLoading}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
+                className={cn(
+                  "w-full pl-12 pr-4 py-6 text-lg rounded-full transition-all duration-200",
+                  "border-2 focus-visible:ring-offset-2",
+                  "hover:border-border focus-visible:border-primary",
+                  isFocused ? "shadow-md" : "shadow-sm hover:shadow-md"
+                )}
+                disabled={isLoading || !isLoaded}
                 required
               />
             </div>
@@ -56,7 +83,7 @@ export default function HomeScreen({ onAddressSubmit }: HomeScreenProps) {
               type="submit"
               size="lg"
               className="text-base px-8"
-              disabled={isLoading || !address.trim()}
+              disabled={isLoading || !address.trim() || !isLoaded}
             >
               {isLoading ? "Finding your bin night..." : "Find my bin night"}
             </Button>
