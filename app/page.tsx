@@ -46,22 +46,22 @@ export default function BinApp() {
       {
         date: "Thursday, 30 January 2025",
         bins: [
-          { type: "general" as const, name: "General Waste", color: "bg-red-500" },
-          { type: "recycling" as const, name: "Recycling", color: "bg-yellow-500" },
+          { type: "general" as const, name: "General Waste", color: "bg-chart-1" },
+          { type: "recycling" as const, name: "Recycling", color: "bg-chart-2" },
         ],
       },
       {
         date: "Friday, 31 January 2025",
         bins: [
-          { type: "general" as const, name: "General Waste", color: "bg-red-500" },
-          { type: "green" as const, name: "Green Waste", color: "bg-green-500" },
+          { type: "general" as const, name: "General Waste", color: "bg-chart-1" },
+          { type: "green" as const, name: "Green Waste", color: "bg-chart-3" },
         ],
       },
       {
         date: "Monday, 3 February 2025",
         bins: [
-          { type: "recycling" as const, name: "Recycling", color: "bg-yellow-500" },
-          { type: "green" as const, name: "Green Waste", color: "bg-green-500" },
+          { type: "recycling" as const, name: "Recycling", color: "bg-chart-2" },
+          { type: "green" as const, name: "Green Waste", color: "bg-chart-3" },
         ],
       },
     ]

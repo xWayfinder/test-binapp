@@ -40,7 +40,7 @@ export default function ResultsScreen({ address, binData, onNewSearch }: Results
           <Button
             variant="ghost"
             onClick={onNewSearch}
-            className="mb-4 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+            className="mb-4 text-primary hover:text-primary/90 hover:bg-accent"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             New Search
@@ -52,7 +52,7 @@ export default function ResultsScreen({ address, binData, onNewSearch }: Results
               <MapPin className="w-4 h-4 mr-1" />
               <span className="text-sm">{address}</span>
             </div>
-            <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+            <Badge variant="secondary" className="bg-accent text-accent-foreground">
               {binData.zone}
             </Badge>
           </div>
@@ -60,7 +60,7 @@ export default function ResultsScreen({ address, binData, onNewSearch }: Results
 
         <div className="space-y-6">
           <Card className="border-0 shadow-lg">
-            <CardHeader className="bg-gray-50 rounded-t-lg">
+            <CardHeader className="bg-muted rounded-t-lg">
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle className="text-lg text-gray-800">Current Date</CardTitle>
@@ -75,7 +75,7 @@ export default function ResultsScreen({ address, binData, onNewSearch }: Results
           </Card>
 
           <Card className="border-0 shadow-lg">
-            <CardHeader className="bg-green-50 rounded-t-lg">
+            <CardHeader className="bg-accent rounded-t-lg">
               <CardTitle className="text-lg text-gray-800 flex items-center">
                 <Trash2 className="w-5 h-5 mr-2 text-green-600" />
                 Next Collection
@@ -92,7 +92,7 @@ export default function ResultsScreen({ address, binData, onNewSearch }: Results
                 {binData.nextCollection.bins.map((bin, index) => (
                   <div
                     key={index}
-                    className="flex items-center p-4 rounded-lg border-2 border-gray-100 bg-white hover:bg-gray-50 transition-colors"
+                    className="flex items-center p-4 rounded-lg border-2 border-border bg-background hover:bg-muted transition-colors"
                   >
                     <div
                       className={`w-12 h-12 rounded-full ${bin.color} flex items-center justify-center text-white mr-4`}
@@ -109,7 +109,7 @@ export default function ResultsScreen({ address, binData, onNewSearch }: Results
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-lg bg-blue-50">
+          <Card className="border-0 shadow-lg bg-accent">
             <CardContent className="pt-6">
               <div className="text-center">
                 <h3 className="font-semibold text-blue-900 mb-2">Reminder</h3>

@@ -29,7 +29,7 @@ export default function HomeScreen({ onAddressSubmit }: HomeScreenProps) {
     <div className="container mx-auto px-4 py-8 min-h-screen flex items-center justify-center">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-full mb-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-full mb-4">
             <Trash2 className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Melbourne Bin Collection</h1>
@@ -63,7 +63,7 @@ export default function HomeScreen({ onAddressSubmit }: HomeScreenProps) {
 
               <Button
                 type="submit"
-                className="w-full h-12 text-base bg-blue-600 hover:bg-blue-700"
+                className="w-full h-12 text-base bg-primary hover:bg-primary/90"
                 disabled={isLoading || !address.trim()}
               >
                 {isLoading ? "Finding your bin night..." : "Find my bin night"}
