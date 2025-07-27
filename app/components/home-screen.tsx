@@ -35,7 +35,7 @@ export default function HomeScreen({ onAddressSubmit }: HomeScreenProps) {
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Melbourne Bin Collection</h1>
           <p className="text-gray-600">Find your bin collection schedule</p>
           <div className="mt-4">
-            <Button asChild>
+            <Button variant="secondary" asChild>
               <a href="/auth/login">Login</a>
             </Button>
           </div>
