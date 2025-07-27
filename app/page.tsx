@@ -89,7 +89,7 @@ export default function BinApp() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50">
+    <div className="min-h-screen">
       {currentScreen === "home" && <HomeScreen onAddressSubmit={handleAddressSubmit} />}
 
       {currentScreen === "results" && binData && (
