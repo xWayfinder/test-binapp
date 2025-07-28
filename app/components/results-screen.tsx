@@ -35,7 +35,7 @@ export default function ResultsScreen({ address, binData, onNewSearch }: Results
 
   return (
     <div className="container mx-auto px-4 py-8 min-h-screen">
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-4xl mx-auto">
         <div className="mb-6">
           <Button
             variant="ghost"
@@ -47,8 +47,8 @@ export default function ResultsScreen({ address, binData, onNewSearch }: Results
           </Button>
 
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Bin Collection Schedule</h1>
-            <div className="flex items-center justify-center text-gray-600 mb-2">
+            <h1 className="text-2xl font-bold text-foreground mb-2">Bin Collection Schedule</h1>
+            <div className="flex items-center justify-center text-muted-foreground mb-2">
               <MapPin className="w-4 h-4 mr-1" />
               <span className="text-sm">{address}</span>
             </div>
