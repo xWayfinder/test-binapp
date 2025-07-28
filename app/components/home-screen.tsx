@@ -1,7 +1,8 @@
 "use client"
 
 import type React from "react"
-import { useState, useCallback } from "react"
+import { useState, useCallback, useTransition } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { MapPin, Trash2 } from "lucide-react"
@@ -9,12 +10,14 @@ import { useGooglePlaces } from "@/hooks/use-google-places"
 import { cn } from "@/lib/utils"
 
 interface HomeScreenProps {
-  onAddressSubmit: (address: string) => Promise<void>
+  onAddressSubmit: (address: string) => Promise<{ success: boolean; redirect: string }>
 }
 
 export default function HomeScreen({ onAddressSubmit }: HomeScreenProps) {
   const [address, setAddress] = useState("")
   const [isFocused, setIsFocused] = useState(false)
+  const router = useRouter()
+  const [isPending, startTransition] = useTransition()
 
   const handleAddressSelect = useCallback((selectedAddress: string) => {
     console.log('Address selected:', selectedAddress)
@@ -23,21 +26,31 @@ export default function HomeScreen({ onAddressSubmit }: HomeScreenProps) {
 
   const handleAddressSubmit = useCallback(async (selectedAddress: string) => {
     console.log('Submitting address:', selectedAddress)
-    await onAddressSubmit(selectedAddress)
-  }, [onAddressSubmit])
+    startTransition(async () => {
+      const result = await onAddressSubmit(selectedAddress)
+      if (result.success) {
+        router.push(result.redirect)
+      }
+    })
+  }, [onAddressSubmit, router])
 
-  const { inputRef, isLoaded, isLoading } = useGooglePlaces({
+  const { inputRef, isLoaded } = useGooglePlaces({
     onAddressSelect: handleAddressSelect,
     onAddressSubmit: handleAddressSubmit
   })
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!address.trim() || isLoading) return
+    if (!address.trim() || isPending) return
 
     try {
       console.log('Manual submit with address:', address)
-      await onAddressSubmit(address)
+      startTransition(async () => {
+        const result = await onAddressSubmit(address)
+        if (result.success) {
+          router.push(result.redirect)
+        }
+      })
     } catch (error) {
       console.error('Error submitting address:', error)
     }
@@ -72,7 +85,7 @@ export default function HomeScreen({ onAddressSubmit }: HomeScreenProps) {
                   "hover:border-border focus-visible:border-primary",
                   isFocused ? "shadow-md" : "shadow-sm hover:shadow-md"
                 )}
-                disabled={isLoading || !isLoaded}
+                disabled={!isLoaded}
                 required
               />
             </div>
@@ -83,9 +96,9 @@ export default function HomeScreen({ onAddressSubmit }: HomeScreenProps) {
               type="submit"
               size="lg"
               className="text-base px-8"
-              disabled={isLoading || !address.trim() || !isLoaded}
+              disabled={!isLoaded || !address.trim() || isPending}
             >
-              {isLoading ? "Finding your bin night..." : "Find my bin night"}
+              {isPending ? "Finding your bin night..." : "Find my bin night"}
             </Button>
           </div>
 

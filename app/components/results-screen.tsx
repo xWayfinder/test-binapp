@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, Calendar, MapPin, Trash2, Recycle, Leaf } from "lucide-react"
-import type { BinData } from "../page"
+import type { BinData } from "@/types"
 
 interface ResultsScreenProps {
   address: string
