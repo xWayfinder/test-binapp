@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input"
 import { MapPin, Trash2 } from "lucide-react"
 import { useGooglePlaces } from "@/hooks/use-google-places"
 import { cn } from "@/lib/utils"
+import Image from "next/image"
 
 interface HomeScreenProps {
   onAddressSubmit: (address: string, coordinates?: { lat: number; lng: number }) => Promise<{ success: boolean; redirect: string }>
@@ -89,70 +90,87 @@ export default function HomeScreen({ onAddressSubmit }: HomeScreenProps) {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4">
-      <div className="w-full max-w-2xl space-y-4">
-        <div className="text-center space-y-2">
-          <h1 className="text-2xl font-bold tracking-tight">Find Your Bin Collection Zone</h1>
-          <p className="text-sm text-muted-foreground">
-            Enter your address to see your bin collection schedule
-          </p>
-        </div>
+    <div className="flex flex-col min-h-screen">
+      {/* Hero Section */}
+      <div className="relative w-full h-[50vh] bg-accent overflow-hidden">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+        >
+          <source src="/hero-video.mp4" type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background" />
+      </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="relative">
-            <Input
-              ref={inputRef}
-              type="text"
-              placeholder="Enter your address..."
-              className={cn(
-                "pl-4 pr-8 py-6 text-lg rounded-full transition-all duration-200",
-                "border-2 focus-visible:ring-offset-2",
-                "hover:border-border focus-visible:border-primary",
-                isFocused ? "shadow-md" : "shadow-sm hover:shadow-md",
-                "bg-background"
-              )}
-              onFocus={() => setIsFocused(true)}
-              onBlur={() => setIsFocused(false)}
-              onChange={(e) => setAddress(e.target.value)}
-              value={address}
-              required
-            />
-            {address && (
-              <button
-                type="button"
-                onClick={() => {
-                  setAddress("")
-                  setCoordinates(undefined)
-                  if (inputRef.current) {
-                    inputRef.current.value = ""
-                    inputRef.current.focus()
-                  }
-                }}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-              >
-                <Trash2 className="h-4 w-4" />
-              </button>
-            )}
+      {/* Search Section */}
+      <div className="relative -mt-20 flex-grow flex flex-col items-center px-4 pb-4">
+        <div className="w-full max-w-2xl space-y-4 bg-background rounded-lg p-8 shadow-lg">
+          <div className="text-center space-y-2">
+            <h1 className="text-3xl font-bold tracking-tight">Find Your Bin Collection Zone</h1>
+            <p className="text-lg text-muted-foreground">
+              Enter your address to see your bin collection schedule
+            </p>
           </div>
 
-          <Button
-            type="submit"
-            className="w-full rounded-full py-6 text-lg"
-            disabled={!address.trim() || isPending}
-          >
-            {isPending ? (
-              <div className="flex items-center justify-center">
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                <span className="ml-2">Searching...</span>
-              </div>
-            ) : (
-              <div className="flex items-center justify-center">
-                <MapPin className="mr-2 h-4 w-4" />
-                <span>Search</span>
-              </div>
-            )}
-          </Button>
-        </form>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="relative">
+              <Input
+                ref={inputRef}
+                type="text"
+                placeholder="Enter your address..."
+                className={cn(
+                  "pl-4 pr-8 py-6 text-lg rounded-full transition-all duration-200",
+                  "border-2 focus-visible:ring-offset-2",
+                  "hover:border-border focus-visible:border-primary",
+                  isFocused ? "shadow-md" : "shadow-sm hover:shadow-md",
+                  "bg-background"
+                )}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
+                onChange={(e) => setAddress(e.target.value)}
+                value={address}
+                required
+              />
+              {address && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAddress("")
+                    setCoordinates(undefined)
+                    if (inputRef.current) {
+                      inputRef.current.value = ""
+                      inputRef.current.focus()
+                    }
+                  }}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full rounded-full py-6 text-lg"
+              disabled={!address.trim() || isPending}
+            >
+              {isPending ? (
+                <div className="flex items-center justify-center">
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                  <span className="ml-2">Searching...</span>
+                </div>
+              ) : (
+                <div className="flex items-center justify-center">
+                  <MapPin className="mr-2 h-4 w-4" />
+                  <span>Search</span>
+                </div>
+              )}
+            </Button>
+          </form>
+        </div>
       </div>
     </div>
   )
