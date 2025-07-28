@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 
 type GooglePlacesHookProps = {
-  onAddressSelect?: (address: string) => void
-  onAddressSubmit?: (address: string) => Promise<void>
+  onAddressSelect?: (address: string, coordinates?: { lat: number; lng: number }) => void
+  onAddressSubmit?: (address: string, coordinates?: { lat: number; lng: number }) => Promise<void>
 }
 
 export function useGooglePlaces({ onAddressSelect, onAddressSubmit }: GooglePlacesHookProps) {
@@ -71,7 +71,7 @@ export function useGooglePlaces({ onAddressSelect, onAddressSubmit }: GooglePlac
         inputRef.current,
         {
           componentRestrictions: { country: 'au' },
-          fields: ['formatted_address', 'name'],
+          fields: ['formatted_address', 'name', 'geometry'],
           types: ['address']
         }
       )
@@ -92,7 +92,13 @@ export function useGooglePlaces({ onAddressSelect, onAddressSubmit }: GooglePlac
           return
         }
 
-        console.log('Setting address:', address) // Debug log
+        // Get coordinates if available
+        const coordinates = place.geometry?.location ? {
+          lat: place.geometry.location.lat(),
+          lng: place.geometry.location.lng()
+        } : undefined
+
+        console.log('Setting address:', address, 'coordinates:', coordinates) // Debug log
         
         // Update input value directly to ensure it's set
         if (inputRef.current) {
@@ -101,15 +107,15 @@ export function useGooglePlaces({ onAddressSelect, onAddressSubmit }: GooglePlac
 
         // Notify parent components
         if (onAddressSelect) {
-          onAddressSelect(address)
+          onAddressSelect(address, coordinates)
         }
         
         // Submit if handler provided
         if (onAddressSubmit) {
           try {
             setIsLoading(true)
-            console.log('Submitting address:', address) // Debug log
-            await onAddressSubmit(address)
+            console.log('Submitting address:', address, 'coordinates:', coordinates) // Debug log
+            await onAddressSubmit(address, coordinates)
           } catch (error) {
             console.error('Error submitting address:', error)
           } finally {

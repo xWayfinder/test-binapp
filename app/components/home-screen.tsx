@@ -11,41 +11,45 @@ import { useGooglePlaces } from "@/hooks/use-google-places"
 import { cn } from "@/lib/utils"
 
 interface HomeScreenProps {
-  onAddressSubmit: (address: string) => Promise<{ success: boolean; redirect: string }>
+  onAddressSubmit: (address: string, coordinates?: { lat: number; lng: number }) => Promise<{ success: boolean; redirect: string }>
 }
 
 export default function HomeScreen({ onAddressSubmit }: HomeScreenProps) {
   const [address, setAddress] = useState("")
+  const [coordinates, setCoordinates] = useState<{ lat: number; lng: number } | undefined>()
   const [isFocused, setIsFocused] = useState(false)
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const posthog = usePostHog()
 
-  const handleAddressSelect = useCallback((selectedAddress: string) => {
-    console.log('Address selected:', selectedAddress)
+  const handleAddressSelect = useCallback((selectedAddress: string, coords?: { lat: number; lng: number }) => {
+    console.log('Address selected:', selectedAddress, 'coordinates:', coords)
     setAddress(selectedAddress)
+    setCoordinates(coords)
     
     // Track address selection from Google Places
     posthog.capture('address_selected_from_places', {
       address_length: selectedAddress.length,
       has_melbourne: selectedAddress.toLowerCase().includes('melbourne'),
-      selection_method: 'google_places'
+      selection_method: 'google_places',
+      has_coordinates: !!coords
     })
   }, [posthog])
 
-  const handleAddressSubmit = useCallback(async (selectedAddress: string) => {
-    console.log('Submitting address:', selectedAddress)
+  const handleAddressSubmit = useCallback(async (selectedAddress: string, coords?: { lat: number; lng: number }) => {
+    console.log('Submitting address:', selectedAddress, 'coordinates:', coords)
     
     // Track address submission
     posthog.capture('address_submitted', {
       address_length: selectedAddress.length,
       has_melbourne: selectedAddress.toLowerCase().includes('melbourne'),
       has_collins_street: selectedAddress.toLowerCase().includes('collins street'),
-      submission_method: 'google_places_submit'
+      submission_method: 'google_places_submit',
+      has_coordinates: !!coords
     })
     
     startTransition(async () => {
-      const result = await onAddressSubmit(selectedAddress)
+      const result = await onAddressSubmit(selectedAddress, coords)
       if (result.success) {
         router.push(result.redirect)
       }
@@ -62,18 +66,19 @@ export default function HomeScreen({ onAddressSubmit }: HomeScreenProps) {
     if (!address.trim() || isPending) return
 
     try {
-      console.log('Manual submit with address:', address)
+      console.log('Manual submit with address:', address, 'coordinates:', coordinates)
       
       // Track manual address submission
       posthog.capture('address_submitted', {
         address_length: address.length,
         has_melbourne: address.toLowerCase().includes('melbourne'),
         has_collins_street: address.toLowerCase().includes('collins street'),
-        submission_method: 'manual_form_submit'
+        submission_method: 'manual_form_submit',
+        has_coordinates: !!coordinates
       })
       
       startTransition(async () => {
-        const result = await onAddressSubmit(address)
+        const result = await onAddressSubmit(address, coordinates)
         if (result.success) {
           router.push(result.redirect)
         }
@@ -83,71 +88,68 @@ export default function HomeScreen({ onAddressSubmit }: HomeScreenProps) {
     }
   }
 
-  const handleAddressFocus = () => {
-    posthog.capture('address_input_focused')
-    setIsFocused(true)
-  }
-
-  const handleAddressBlur = () => {
-    setIsFocused(false)
-  }
-
   return (
-    <div className="container mx-auto px-4 py-8 min-h-[calc(100vh-3.5rem)] flex flex-col items-center justify-center">
-      <div className="w-full max-w-2xl text-center">
-        <div className="mb-12">
-          <div className="inline-flex items-center justify-center w-32 h-32 mb-8">
-            <Trash2 className="w-24 h-24 text-primary" />
-          </div>
-          <h1 className="text-4xl font-bold mb-4">Melbourne Bin Collection</h1>
-          <p className="text-xl text-muted-foreground mb-8">Find your bin collection schedule</p>
+    <div className="flex flex-col items-center justify-center min-h-screen p-4">
+      <div className="w-full max-w-md space-y-4">
+        <div className="text-center space-y-2">
+          <h1 className="text-2xl font-bold tracking-tight">Find Your Bin Collection Zone</h1>
+          <p className="text-sm text-muted-foreground">
+            Enter your address to see your bin collection schedule
+          </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="w-full max-w-2xl mx-auto space-y-6">
-          <div className="relative group">
-            <div className="relative">
-              <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-              <Input
-                ref={inputRef}
-                type="text"
-                placeholder="Enter your full address"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                onFocus={handleAddressFocus}
-                onBlur={handleAddressBlur}
-                className={cn(
-                  "w-full pl-12 pr-4 py-6 text-lg rounded-full transition-all duration-200",
-                  "border-2 focus-visible:ring-offset-2",
-                  "hover:border-border focus-visible:border-primary",
-                  isFocused ? "shadow-md" : "shadow-sm hover:shadow-md"
-                )}
-                disabled={!isLoaded}
-                required
-              />
-            </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="relative">
+            <Input
+              ref={inputRef}
+              type="text"
+              placeholder="Enter your address..."
+              className={cn(
+                "pr-8",
+                isFocused && "ring-2 ring-offset-2 ring-ring"
+              )}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
+              onChange={(e) => setAddress(e.target.value)}
+              value={address}
+              required
+            />
+            {address && (
+              <button
+                type="button"
+                onClick={() => {
+                  setAddress("")
+                  setCoordinates(undefined)
+                  if (inputRef.current) {
+                    inputRef.current.value = ""
+                    inputRef.current.focus()
+                  }
+                }}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
+            )}
           </div>
 
-          <div className="flex justify-center gap-4">
-            <Button
-              type="submit"
-              size="lg"
-              className="text-base px-8"
-              disabled={!isLoaded || !address.trim() || isPending}
-            >
-              {isPending ? "Finding your bin night..." : "Find my bin night"}
-            </Button>
-          </div>
-
-          <div className="mt-4 text-center">
-            <p className="text-sm text-muted-foreground">
-              <span className="font-medium">Example:</span> 123 Collins Street, Melbourne VIC 3000
-            </p>
-          </div>
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={!address.trim() || isPending}
+          >
+            {isPending ? (
+              <div className="flex items-center">
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                <span className="ml-2">Searching...</span>
+              </div>
+            ) : (
+              <div className="flex items-center">
+                <MapPin className="mr-2 h-4 w-4" />
+                <span>Search</span>
+              </div>
+            )}
+          </Button>
         </form>
-
-        <div className="mt-12 text-sm text-muted-foreground">
-          <p>Melbourne City Council Waste Management</p>
-        </div>
       </div>
     </div>
   )
