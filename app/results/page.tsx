@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
-import ResultsScreen from '@/app/components/results-screen'
+import ResultsPageClient from './results-client'
 import { handleNewSearch } from '../actions'
 import type { BinData } from '@/types'
 
@@ -66,7 +66,7 @@ export default async function ResultsPage({
   const binData = await getBinData(address)
 
   return (
-    <ResultsScreen
+    <ResultsPageClient
       address={address}
       binData={binData}
       onNewSearch={handleNewSearch}

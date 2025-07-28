@@ -4,6 +4,8 @@ import './globals.css'
 import { ThemeProvider } from '@/components/theme-provider'
 import { NavBar } from './components/nav-bar'
 import { GoogleMapsScript } from '@/components/google-maps-script'
+import { PostHogProvider } from '@/components/posthog-provider'
+import { Suspense } from 'react'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -21,18 +23,22 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <NavBar />
-          <main className="min-h-screen">
-            {children}
-          </main>
-          <GoogleMapsScript />
-        </ThemeProvider>
+        <Suspense fallback={null}>
+          <PostHogProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <NavBar />
+              <main className="min-h-screen">
+                {children}
+              </main>
+              <GoogleMapsScript />
+            </ThemeProvider>
+          </PostHogProvider>
+        </Suspense>
       </body>
     </html>
   )
