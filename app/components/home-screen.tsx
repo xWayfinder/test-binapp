@@ -90,7 +90,7 @@ export default function HomeScreen({ onAddressSubmit }: HomeScreenProps) {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4">
-      <div className="w-full max-w-md space-y-4">
+      <div className="w-full max-w-2xl space-y-4">
         <div className="text-center space-y-2">
           <h1 className="text-2xl font-bold tracking-tight">Find Your Bin Collection Zone</h1>
           <p className="text-sm text-muted-foreground">
@@ -105,8 +105,11 @@ export default function HomeScreen({ onAddressSubmit }: HomeScreenProps) {
               type="text"
               placeholder="Enter your address..."
               className={cn(
-                "pr-8",
-                isFocused && "ring-2 ring-offset-2 ring-ring"
+                "pl-4 pr-8 py-6 text-lg rounded-full transition-all duration-200",
+                "border-2 focus-visible:ring-offset-2",
+                "hover:border-border focus-visible:border-primary",
+                isFocused ? "shadow-md" : "shadow-sm hover:shadow-md",
+                "bg-background"
               )}
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
@@ -125,7 +128,7 @@ export default function HomeScreen({ onAddressSubmit }: HomeScreenProps) {
                     inputRef.current.focus()
                   }
                 }}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
               >
                 <Trash2 className="h-4 w-4" />
               </button>
@@ -134,16 +137,16 @@ export default function HomeScreen({ onAddressSubmit }: HomeScreenProps) {
 
           <Button
             type="submit"
-            className="w-full"
+            className="w-full rounded-full py-6 text-lg"
             disabled={!address.trim() || isPending}
           >
             {isPending ? (
-              <div className="flex items-center">
+              <div className="flex items-center justify-center">
                 <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
                 <span className="ml-2">Searching...</span>
               </div>
             ) : (
-              <div className="flex items-center">
+              <div className="flex items-center justify-center">
                 <MapPin className="mr-2 h-4 w-4" />
                 <span>Search</span>
               </div>
