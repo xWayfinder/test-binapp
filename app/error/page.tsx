@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
-import ErrorScreen from '@/app/components/error-screen'
+import ErrorPageClient from './error-client'
 import { handleTryAgain } from '../actions'
 
 export default function ErrorPage({
@@ -14,7 +14,7 @@ export default function ErrorPage({
   }
 
   return (
-    <ErrorScreen
+    <ErrorPageClient
       address={address}
       onTryAgain={handleTryAgain}
     />
